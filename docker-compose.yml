@@ -1,6 +1,23 @@
 version: '3.8'
 
+networks:
+  weatherapi:
+
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - mysql
+    ports:
+      - 8080:8080
+    networks:
+      - weatherapi
   mysql:
     image: mysql:latest
     environment:
@@ -12,6 +29,8 @@ services:
       - "${DB_PORT}:3306"
     volumes:
       - mysql_volume:/var/lib/mysql
+    networks:
+      - weatherapi
 
 volumes:
   mysql_volume:
