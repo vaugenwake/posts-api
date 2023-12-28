@@ -58,14 +58,14 @@ watch:
 
 migrate-up:
 	@echo "Migrating up..."
-	@goose -dir ./migrations up >> /proc/1/fd/1
+	@docker-compose run --rm migrate goose -dir ./migrations up > /dev/null
 
 migrate-status:
 	@echo "Status..."
-	@goose -dir ./migrations status
+	@docker-compose run --rm migrate goose -dir ./migrations status > /dev/null
 
 migrate-down:
 	@echo "Status..."
-	@goose -dir ./migrations down
+	@docker-compose run --rm migrate goose -dir ./migrations down > /dev/null
 
 .PHONY: all build run test clean
