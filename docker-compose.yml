@@ -1,7 +1,7 @@
 version: '3.8'
 
 networks:
-  weatherapi:
+  postapi:
 
 services:
   app:
@@ -13,11 +13,28 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     ports:
       - 8080:8080
     networks:
-      - weatherapi
+      - postapi
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrate
+    volumes:
+      - .:/app:ro
+    working_dir: /app
+    environment:
+      GOOSE_DRIVER: mysql
+      GOOSE_DBSTRING: "${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_DATABASE}?parseTime=true"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - postapi
   mysql:
     image: mysql:latest
     environment:
@@ -30,7 +47,23 @@ services:
     volumes:
       - mysql_volume:/var/lib/mysql
     networks:
-      - weatherapi
+      - postapi
+    healthcheck:
+      test: ["CMD", "mysqladmin", "-u$DB_USERNAME", "-p$DB_PASSWORD", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - 8083:8080
+    networks:
+      - postapi
 
 volumes:
   mysql_volume:

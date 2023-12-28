@@ -1,11 +1,10 @@
 package main
 
 import (
-	"weather-api/internal/server"
+	"posts-api/internal/server"
 )
 
 func main() {
-
 	server := server.NewServer()
 
 	err := server.ListenAndServe()

@@ -56,4 +56,16 @@ watch:
 	    fi; \
 	fi
 
+migrate-up:
+	@echo "Migrating up..."
+	@goose -dir ./migrations up >> /proc/1/fd/1
+
+migrate-status:
+	@echo "Status..."
+	@goose -dir ./migrations status
+
+migrate-down:
+	@echo "Status..."
+	@goose -dir ./migrations down
+
 .PHONY: all build run test clean

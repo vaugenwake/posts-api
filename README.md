@@ -1,4 +1,4 @@
-# Project weather-api
+# Project posts-api
 
 One Paragraph of project description goes here
 

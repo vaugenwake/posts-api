@@ -12,8 +12,16 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
+type Post struct {
+	ID    string `json:"id"`
+	Title string `json:"title"`
+	Slug  string `json:"slug"`
+}
+
 type Service interface {
 	Health() map[string]string
+	CreatePost(title string, content string, slug string) (sql.Result, error)
+	GetAllPosts() ([]Post, error)
 }
 
 type service struct {
@@ -56,4 +64,31 @@ func (s *service) Health() map[string]string {
 	return map[string]string{
 		"message": "It's healthy",
 	}
+}
+
+func (s *service) CreatePost(title string, content string, slug string) (sql.Result, error) {
+	insertQuery := "INSERT INTO `posts` (title, content, slug, published_at) VALUES (?, ?, ?, NOW())"
+	return s.db.ExecContext(context.Background(), insertQuery, title, content, slug)
+}
+
+func (s *service) GetAllPosts() ([]Post, error) {
+	selectQuert := "SELECT id, title, slug FROM `posts` WHERE published_at < NOW() ORDER BY id DESC"
+	result, err := s.db.Query(selectQuert)
+	if err != nil {
+		return nil, err
+	}
+
+	defer result.Close()
+
+	var posts []Post
+
+	for result.Next() {
+		var post Post
+		if err := result.Scan(&post.ID, &post.Title, &post.Title); err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	return posts, nil
 }

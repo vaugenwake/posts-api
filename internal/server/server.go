@@ -7,8 +7,9 @@ import (
 	"strconv"
 	"time"
 
+	"posts-api/internal/database"
+
 	_ "github.com/joho/godotenv/autoload"
-	"weather-api/internal/database"
 )
 
 type Server struct {

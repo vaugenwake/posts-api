@@ -4,8 +4,8 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"posts-api/internal/server"
 	"testing"
-	"weather-api/internal/server"
 )
 
 func TestHandler(t *testing.T) {
